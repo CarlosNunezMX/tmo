@@ -15,8 +15,8 @@ function ElegibilityReportItem({ name, children }: ElegibilityReportItemProps) {
 
 function ElegibilityReportReason(props: TMO.Inelegibility.Details) {
   return (
-    <div className="flex flex-col gap-3">
-      <h3>Inelegibility Reasons</h3>
+    <div className="flex flex-col gap-2">
+      <h3 className="font-bold text-lg">Inelegibility Reasons</h3>
       {props.ineligiblityDetails.map((item, i) => (
         <div className="grid grid-cols-2">
           <ElegibilityReportItem name="Code" key={i}>{item.code}</ElegibilityReportItem>
@@ -34,7 +34,7 @@ export default function ElegibilityReport(elegibility: ActionResponse<TMO.Elegib
   return (
     <Container>
       <h2 className="text-xl font-black text-center">Elegibility Report</h2>
-      <div className="grid grid-cols-3">
+      <div className="grid gap-2 md:grid-cols-3">
         <ElegibilityReportItem name="IMEI">{elegibility.data!.imei}</ElegibilityReportItem>
         <ElegibilityReportItem name="Unlock Type">{elegibility.data!.unlockType === TMO.Elegibility.Type.TEMPORAL ? "Temporal" : "Permanent"}</ElegibilityReportItem>
         <ElegibilityReportItem name="Could be unlocked?">
