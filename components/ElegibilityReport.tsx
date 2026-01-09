@@ -29,14 +29,27 @@ function ElegibilityReportReason(props: TMO.Inelegibility.Details) {
 }
 
 export default function ElegibilityReport(elegibility: ActionResponse<TMO.Elegibility.Response>) {
-  const elegible = elegibility.data!.unlockEligible;
-  const unlockType = elegibility.data!.unlockType;
+  if (!elegibility.data) return (
+    <div></div>
+  )
+
+
+  if (elegibility.data.currentUnlockStatus) {
+    return (
+      <Container>
+        <h2 className="text-center text-xl font-bold text-green-700 dark:text-green-400">🎉 Congratulations!</h2>
+        <p className="font-bold text-center">Your device is already unlocked!</p>
+      </Container>
+    )
+  }
+
+  const elegible = elegibility.data.unlockEligible;
   return (
     <Container>
       <h2 className="text-xl font-black text-center">Elegibility Report</h2>
       <div className="grid gap-2 md:grid-cols-3">
         <ElegibilityReportItem name="IMEI">{elegibility.data!.imei}</ElegibilityReportItem>
-        <ElegibilityReportItem name="Unlock Type">{elegibility.data!.unlockType === TMO.Elegibility.Type.TEMPORAL ? "Temporal" : "Permanent"}</ElegibilityReportItem>
+        <ElegibilityReportItem name="Unlock Type">{elegibility.data.unlockType === TMO.Elegibility.Type.TEMPORAL ? "Temporal" : "Permanent"}</ElegibilityReportItem>
         <ElegibilityReportItem name="Could be unlocked?">
           <span className={elegible ? "text-green-400" : "text-red-400"}>
             {elegible ? "Elegible" : "Inelegible"}
@@ -44,7 +57,7 @@ export default function ElegibilityReport(elegibility: ActionResponse<TMO.Elegib
         </ElegibilityReportItem>
       </div>
 
-      {!elegible && <ElegibilityReportReason {...elegibility.data!.ineligiblityDetails} />}
+      {!elegible && <ElegibilityReportReason {...elegibility.data.ineligiblityDetails} />}
     </Container>
   )
 }

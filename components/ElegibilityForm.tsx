@@ -22,19 +22,20 @@ export default function ElegibilityForm({ onFinish }: props) {
         <h2 className="text-xl font-black text-center">TMobile Unlock Elegibility</h2>
         <div className="flex flex-col">
           <label htmlFor="imei" className="font-bold text-sm">IMEI</label>
-          <input className="dark:bg-zinc-700 border dark:border-zinc-600 shadow p-2 rounded " name="imei" type="number" placeholder="Place your 15 digits IMEI number" maxLength={15} />
+          <input className="bg-zinc-400 text-black font-bold dark:text-white dark:bg-zinc-700 shadow p-2 rounded " name="imei" type="number" placeholder="Place your 15 digits IMEI number" maxLength={15} />
         </div>
 
         <div className="flex flex-col">
           <label htmlFor="type" className="font-bold text-sm">Unlock Type</label>
-          <select name="type" className="dark:bg-zinc-700 border dark:border-zinc-600 shadow p-2 rounded ">
+          <select name="type" className="bg-zinc-400 text-black font-bold dark:text-white dark:bg-zinc-700 shadow p-2 rounded ">
             <option value="">Select an option</option>
             <option value={TMO.Elegibility.Type.TEMPORAL}>Temporal</option>
             <option value={TMO.Elegibility.Type.PERMANENT}>Permanent</option>
           </select>
         </div>
 
-        <button className="dark:bg-zinc w-full text-center bg-black rounded py-2 dark:hover:bg-zinc-700 ease-in-out transition-colors disabled:bg-zinc-700 cursor-pointer disabled:cursor-progress" disabled={isPending}>Check capability</button>
+        <button className="bg-zinc-400 text-black dark:text-white font-bold dark:bg-black w-full text-center rounded py-2 dark:hover:bg-zinc-700 hover:bg-zinc-700 hover:text-white ease-in-out transition-colors disabled:bg-zinc-700 cursor-pointer disabled:cursor-progress" disabled={isPending}>Check capability</button>
+        {state.error && <p className="text-red-400">Error found: {state.error}</p>}
       </form >
     </Container>
   )
