@@ -2,25 +2,25 @@ import ActionResponse from "@/lib/actionResponse";
 import { TMO } from "@carlosnunezmx/tmo-api";
 import Container from "./Common";
 
-interface ElegibilityReportItemProps extends React.PropsWithChildren {
+interface EligibilityReportItemProps extends React.PropsWithChildren {
   name: string
 };
 
-function ElegibilityReportItem({ name, children }: ElegibilityReportItemProps) {
-  return <div className="flex flex-col">
-    <h3 className="font-bold font-sm">{name}</h3>
+function EligibilityReportItem({ name, children }: EligibilityReportItemProps) {
+  return <div className="flex overflow-scroll flex-col">
+    <h3 className="font-bold font-xs">{name}</h3>
     <p className="font-medium">{children}</p>
   </div>
 }
 
-function ElegibilityReportReason(props: TMO.Inelegibility.Details) {
+function EligibilityReportReason({ details: reasons }: { details: TMO.InEligibility.Reason[] }) {
   return (
     <div className="flex flex-col gap-2">
       <h3 className="font-bold text-lg">Inelegibility Reasons</h3>
-      {props.ineligiblityDetails.map((item, i) => (
-        <div className="grid grid-cols-2">
-          <ElegibilityReportItem name="Code" key={i}>{item.code}</ElegibilityReportItem>
-          <ElegibilityReportItem name="Description" key={i}>{item.description}</ElegibilityReportItem>
+      {reasons.map((item, i) => (
+        <div className="grid grid-cols-2" key={i}>
+          <EligibilityReportItem name="Code">{item.code}</EligibilityReportItem>
+          <EligibilityReportItem name="Description">{item.description}</EligibilityReportItem>
         </div>
       ))}
 
@@ -28,13 +28,29 @@ function ElegibilityReportReason(props: TMO.Inelegibility.Details) {
   )
 }
 
-export default function ElegibilityReport(elegibility: ActionResponse<TMO.Elegibility.Response>) {
-  if (!elegibility.data) return (
+function EligibilityReportStatusItems({ data }: { data: TMO.InEligibility.StatusItem[] }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 className="font-bold text-lg">Device State Impediments</h3>
+      {data.map((item, i) => (
+        <div className="grid md:grid-cols-3 " key={i}>
+          <EligibilityReportItem name="Status code">{item.statusCode}</EligibilityReportItem>
+          <EligibilityReportItem name="Description">{item.statusDescription}</EligibilityReportItem>
+          <EligibilityReportItem name="Explanation">{item.explanation}</EligibilityReportItem>
+          <EligibilityReportItem name="Reference ID">{item.referenceId}</EligibilityReportItem>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function EligibilityReport(eligibility: ActionResponse<TMO.Eligibility.Response>) {
+  if (eligibility.data.length === 0) return (
     <div></div>
   )
 
 
-  if (elegibility.data.currentUnlockStatus) {
+  if (eligibility.data.every(item => item.currentUnlockStatus)) {
     return (
       <Container>
         <h2 className="text-center text-xl font-bold text-green-700 dark:text-green-400">🎉 Congratulations!</h2>
@@ -43,21 +59,27 @@ export default function ElegibilityReport(elegibility: ActionResponse<TMO.Elegib
     )
   }
 
-  const elegible = elegibility.data.unlockEligible;
-  return (
-    <Container>
-      <h2 className="text-xl font-black text-center">Elegibility Report</h2>
-      <div className="grid gap-2 md:grid-cols-3">
-        <ElegibilityReportItem name="IMEI">{elegibility.data!.imei}</ElegibilityReportItem>
-        <ElegibilityReportItem name="Unlock Type">{elegibility.data.unlockType === TMO.Elegibility.Type.TEMPORAL ? "Temporal" : "Permanent"}</ElegibilityReportItem>
-        <ElegibilityReportItem name="Could be unlocked?">
-          <span className={elegible ? "text-green-400" : "text-red-400"}>
-            {elegible ? "Elegible" : "Inelegible"}
-          </span>
-        </ElegibilityReportItem>
-      </div>
+  return eligibility.data.map(
+    (item, i) => {
+      const eligible = item.unlockEligible;
+      return (
+        <Container key={i}>
+          <h2 className="text-xl font-black text-center">Eligibility Report</h2>
+          <div className="grid gap-2 md:grid-cols-3">
+            <EligibilityReportItem name="IMEI">{item.imei}</EligibilityReportItem>
+            <EligibilityReportItem name="Unlock Type">{item.unlockType === TMO.Eligibility.Type.TEMPORARY ? "Temporary" : "Permanent"}</EligibilityReportItem>
+            <EligibilityReportItem name="Could be unlocked?">
+              <span className={eligible ? "text-green-400" : "text-red-400"}>
+                {eligible ? "Eligible" : "Ineligible"}
+              </span>
+            </EligibilityReportItem>
+          </div>
 
-      {!elegible && <ElegibilityReportReason {...elegibility.data.ineligiblityDetails} />}
-    </Container>
+          {item.ineligiblityDetails.ineligiblityDetails && <EligibilityReportReason details={item.ineligiblityDetails.ineligiblityDetails!} />}
+          {item.ineligiblityDetails.statusItems && <EligibilityReportStatusItems data={item.ineligiblityDetails.statusItems!} />}
+        </Container>
+      )
+    }
   )
+
 }

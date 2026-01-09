@@ -9,13 +9,13 @@ import ElegibilityReport from "@/components/ElegibilityReport";
 
 
 export default function Home() {
-  const [elegibility, setElegibility] = useState<ActionResponse<TMO.Elegibility.Response> | null>(null);
+  const [eligibility, setEligibility] = useState<ActionResponse<TMO.Eligibility.Response>>({ data: [], ok: false });
   return (
     <div className="flex flex-col bg-zinc-50 font-sans dark:bg-black">
       <Header />
-      <ElegibilityForm onFinish={response => setElegibility(response)} />
+      <ElegibilityForm onFinish={response => setEligibility(response)} />
       {
-        elegibility && <ElegibilityReport error={elegibility.error} data={elegibility.data} ok={elegibility.ok} />
+        (eligibility.data.length != 0 || eligibility?.error) && <ElegibilityReport error={eligibility.error} data={eligibility.data} ok={eligibility.ok} />
       }
     </div >
   );
